@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Elements Practice</title>
+    <link rel="stylesheet" href="style/layout.css">
+
+    <script type="module" src="./calcM.js"></script> 
+</head>
+
+<body>
+    <header>
+        <h1>Custom Elements Practice</h1>
+    </header>
+    <main>
+        
+        <p id="rndnum">Placeholder for Random Number</p>
+        <p id="addnum">Placeholder for Added Numbers</p>
+    </main>
+    
+    <script type="text/javascript" src="./addNumber.js"></script>
+    <!-- <script type="text/javascript" src="./calc.js"></script> -->
+    
+    <script type="module" >
+        let num = add(1,5);
+        let tgt = document.querySelector('#addnum');
+        tgt.innerText = num;
+    </script>
+    <!-- <script type="module" >
+        let num = add(1,5);
+        let tgt = document.querySelector('#addnum');
+        tgt.innerText = num;
+    </script> -->
+</body>
+</html>

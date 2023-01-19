@@ -1,0 +1,103 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Schema Describer</title>
+    <!-- <link rel="icon" href="content/renLogo.ico"> -->
+    <link rel="stylesheet" href="style/layout.css">
+</head>
+
+<body>
+    <header>
+        <h1>JSON Schema Describer</h1>
+    </header>
+    <main>
+        <script type="module">
+            import PetCard from "pet-card/index.js";
+            window.customElements.define("pet-card", PetCard);
+        </script>
+        <div id="content_grid">
+            <section id="aa">
+                <h2>Input Json Text</h2>
+                <span />
+                <p id="json-input-valid">--</p>
+                <button onclick="updateJSONInputValidText()">Parse JSON</button>
+                <textarea id="json-input"></textarea>
+                <script>
+                    function checkTextIsJson(inputTextString) {
+                        try {
+                            let jsonData = JSON.parse(inputTextString);
+                            return true;
+                        } catch (e) {
+                            return false;
+                        }
+                    }
+                    function getJsonInputText() {
+                        return document.getElementById("json-input").value;
+                    }
+                    function setJsonInputText(jsonText) {
+                        document.getElementById("json-input").innerText = jsonText;
+                    }
+                    function setJsonInputValidText(jsonText) {
+                        document.getElementById("json-input-valid").innerText = jsonText;
+                    }
+
+                    function onCtrlShiftF() {
+                        setJsonInputValidText("YOU PRESSED THE BUTTONS!");
+                    }
+
+                    function addItemText(item) {
+                        let addAfter = document.getElementById("json-input");
+                        document.addAfter()
+                    }
+
+                    document.addEventListener("keydown", function (event) {
+                        if (event.ctrlKey && event.shiftKey && event.key === "F") {
+                            event.preventDefault();
+                            onCtrlShiftF();
+                        }
+                    });
+
+                    function updateJSONInputValidText() {
+                        // Get the value of the textarea
+                        let inputText = getJsonInputText();
+                        if (!inputText.trim()) {
+                            setJsonInputValidText("N/A");
+                        }
+                        else {
+                            if (checkTextIsJson(inputText)) {
+                                setJsonInputValidText("Valid JSON");
+                            }
+                            else {
+                                setJsonInputValidText("Invalid JSON");
+                            }
+                        }
+                    }
+                </script>
+                <span />
+            </section>
+            <section id="bb">
+                <hello-world></hello-world>
+            </section>
+        </div>
+    </main>
+    </div>
+
+    <script type="text/javascript">
+        class HelloWorld extends HTMLElement {
+          constructor() {
+            // very important
+            // needed in every constructor
+            // which extends another class
+            super();
+  
+            // do magic here
+            this.innerText = 'Hello World';
+          }
+        }
+        customElements.define('hello-world', HelloWorld);
+    </script>
+</body>
+
+</html>

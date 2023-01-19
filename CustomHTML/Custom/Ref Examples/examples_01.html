@@ -1,0 +1,123 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Elements Practice</title>
+    <style>
+        div.divbox {
+            border: 5px solid purple;
+            padding: 10px;
+            margin: 10px;
+        }
+        
+        .red-border {
+            border: 1px solid red;
+            padding: 10px;
+        }
+
+        #target {
+            border: 1px solid blue;
+            padding: 10px;
+        }
+    </style>
+    <link rel="stylesheet" href="style/layout.css">
+</head>
+
+<body>
+    <header>
+        <h1>Custom Elements Practice</h1>
+    </header>
+    <main>
+        <div class="divbox">
+            <hello-world></hello-world>
+        </div>
+        <div class="divbox">
+            <span is="add-smiley">Hello World</span>
+        </div>
+        <div class="divbox">
+            <hello-world-shadow></hello-world-shadow>
+        </div>
+        <div class="divbox">
+            <p>Hello World - Load a template to the Shadow Dom (not custom element)</p>
+            <button onclick="loadShadowTemplate()">Put Template Code to Target Div</button>
+            <div id="target"></div>
+        </div>
+    </main>
+    
+    <template id="hw-button-shadow-content-template">
+        <div class="red-border">
+            <p>Hello Templates</p>
+            <p>This is a small template</p>
+        </div>
+    </template>
+    
+    <template id="hw-button-shadow-empty-template">
+        <div></div>
+    </template>
+    
+
+    <script type="text/javascript">
+
+        // CUSTOM ELEMENT MOST BASIC
+        class HelloWorld extends HTMLElement {
+            constructor() {
+                // needed in every constructor which extends another class
+                super();
+
+                // do magic here
+                this.innerText = 'Hello World';
+            }
+        }
+        customElements.define('hello-world', HelloWorld);
+
+
+        // CUSTOM ELEMENT EXTENDS SPAN
+        class AddSmiley extends HTMLSpanElement {
+            constructor() {
+                super();
+                this.innerText += ": Happy Smile Time!";
+            }
+        }
+        customElements.define('add-smiley', AddSmiley, { extends: 'span' });
+
+
+
+        // SHADOW DOM BASIC
+        class HelloWorldShadow extends HTMLElement {
+            constructor() {
+                super();
+
+                // shadow DOM lets you create a new root node called "shadow root" that is hidden from the normal DOM 
+                // only accessible via a "shadow host" 
+                let shadowRoot = this.attachShadow({ mode: 'open' });
+
+                // add a text node to the shadow root
+                shadowRoot.append('Hello World - Shadow DOM');
+            }
+        }
+        customElements.define('hello-world-shadow', HelloWorldShadow);
+
+
+        // SHADOW DOM FROM TEMPLATE
+        function loadShadowTemplate() {
+            // Get the reference to the template
+            let templateReference = document.querySelector('#hw-button-shadow-content-template');
+
+            // Get the content node
+            let templateContent = templateReference.content;
+
+            // Get the reference to target DOM
+            let targetDOM = document.querySelector('#target');
+
+            // add a shadow root to the target reference DOM
+            let targetShadowRoot = targetDOM.attachShadow({ mode: 'open' });
+
+            // clone the template content
+            // and append it to the target div
+            targetShadowRoot.appendChild(templateContent.cloneNode(true));
+        }
+
+    </script>    
+</body>
+</html>
