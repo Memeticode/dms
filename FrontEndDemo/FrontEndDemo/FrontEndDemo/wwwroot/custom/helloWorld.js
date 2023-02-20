@@ -4,6 +4,6 @@
         super();
 
         // do magic here
-        this.innerText = 'Hello World';
+        this.innerText = 'Hello World! SMD!';
     }
 }
