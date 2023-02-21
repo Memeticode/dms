@@ -1,5 +1,5 @@
 {
-    "idX": 1.00000000000000000000000000000000001,
+    "idX": 1.6942069420,
     "id": 1,
     "real": true,
     "unreal": false,
@@ -18,7 +18,7 @@
         "lng": "81.1496"
       }
     },
-    // "favorite_numbers": [3, 7, 11, 13, 17, 23],
+    "favorite_numbers": [3, 7, 11, 13, 17, 23],
     "phone": "1-770-736-8031 x56442",
     "website": "hildegard.org",
     "company": {

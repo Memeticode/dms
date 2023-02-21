@@ -34,7 +34,7 @@ public interface ITreeNode<T, Tval> where T : IEquatable<T>
 	public T[] BranchIds { get; }
 	public T FirstBranchId { get; }
 	public T LastBranchId { get; }
-
+ 
 	public T[] SiblingIds { get; }
 	public T PrevSiblingId { get; }
 	public T NextSiblingId { get; }
