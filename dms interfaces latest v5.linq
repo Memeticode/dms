@@ -10,17 +10,24 @@
 
 void Main()
 {
+	// Tree Graph Tests	
 	var tt = new TreeTests.TreeGraphTests<object>();
 	tt.RunAllTests();
 
 	var dtt = new TreeTests.DataTreeTests();
 	dtt.RunAllTests();
 
+
+	// Data Store Tests	
 	var dsrit = new DataStoreTests.RawInputTests();
 	dsrit.RunAllTests();
 	
 	var dsft = new DataStoreTests.FileTests();
 	dsft.RunAllTests();
+	
+	
+	
+	
 	
 	var sampleTree = tt.GetExampleTree1();
 	sampleTree.Display();
@@ -141,7 +148,7 @@ namespace DmsEnum
 		private static readonly Dictionary<string, StructureType> DataStructureMap = DmsEnumExtensions.GenerateEnumNameValueMap<StructureType>();
 		private static readonly Dictionary<string, ValueType> DataValueMap = DmsEnumExtensions.GenerateEnumNameValueMap<ValueType>();
 		//private static readonly Dictionary<string, SourceType> DataSourceMap = DmsEnumExtensions.GenerateEnumNameValueMap<SourceType>();
-		//private static readonly Dictionary<string, FormatType> DataFormatMap = DmsEnumExtensions.GenerateEnumNameValueMap<FormatType>();
+		//private static readonly Dictionary<string, DataSpecType> DataFormatMap = DmsEnumExtensions.GenerateEnumNameValueMap<DataSpecType>();
 
 		//private static readonly Dictionary<DmsEnumType, Dictionary<string, Enum>> DmsEnumMap
 		//	= new Dictionary<DmsEnumType, Dictionary<string, Enum>>()
@@ -1239,7 +1246,7 @@ public class DataReaderException : Exception
 namespace DmsEnum
 {
 	/// <summary>
-	/// Data sources which can be read from
+	/// Data store which can be read from or theoretically written to
 	/// </summary>
 	public enum StoreType
 	{
@@ -1250,9 +1257,9 @@ namespace DmsEnum
 	}
 
 	/// <summary>
-	/// Data storage formats used by data source
+	/// Data specification (guide for reading/writing data used by data source)
 	/// </summary>
-	public enum DataFormatType
+	public enum DataSpecType
 	{
 		Dsv,    // delimitted string values
 		Json,
@@ -1264,18 +1271,18 @@ namespace DmsEnum
 
 	public partial class DmsEnumExtensions
 	{
-		public static HashSet<DataFormatType> GetFormatTypes(this StoreType st) => StoreFormatTypeMap[st];
+		public static HashSet<DataSpecType> GetDataSpecTypes(this StoreType st) => StoreDataSpecTypeMap[st];
 		
 		public static IDataStore GetSourceObject(this StoreType st) => StoreObjectConstructorMap[st]();
-		//public static IDataStoreFormat GetFormatObject(this DataFormatType ft) => FormatObjectConstructorMap[ft]();
+		//public static IDataStoreFormat GetFormatObject(this DataSpecType ft) => FormatObjectConstructorMap[ft]();
 
-		private static readonly Dictionary<StoreType, HashSet<DataFormatType>> StoreFormatTypeMap
-		= new Dictionary<StoreType, HashSet<DataFormatType>>()
+		private static readonly Dictionary<StoreType, HashSet<DataSpecType>> StoreDataSpecTypeMap
+		= new Dictionary<StoreType, HashSet<DataSpecType>>()
 		{
-			{ StoreType.RawInput,    new HashSet<DataFormatType>() { DataFormatType.Dsv, DataFormatType.Json, DataFormatType.Xml } },
-			{ StoreType.File,        new HashSet<DataFormatType>() { DataFormatType.Dsv, DataFormatType.Json, DataFormatType.Xml } },
-			{ StoreType.Database,    new HashSet<DataFormatType>() { DataFormatType.Table, DataFormatType.Query } },
-			{ StoreType.Api,         new HashSet<DataFormatType>() },
+			{ StoreType.RawInput,    new HashSet<DataSpecType>() { DataSpecType.Dsv, DataSpecType.Json, DataSpecType.Xml } },
+			{ StoreType.File,        new HashSet<DataSpecType>() { DataSpecType.Dsv, DataSpecType.Json, DataSpecType.Xml } },
+			{ StoreType.Database,    new HashSet<DataSpecType>() { DataSpecType.Table, DataSpecType.Query } },
+			{ StoreType.Api,         new HashSet<DataSpecType>() },
 		};
 
 		private static readonly Dictionary<StoreType, Func<IDataStore>> StoreObjectConstructorMap
@@ -1287,15 +1294,24 @@ namespace DmsEnum
 			//{ SourceType.Api,          () => new  } 
 		};
 
-		//private static readonly Dictionary<DataFormatType, Func<IDataStoreFormat>> FormatObjectConstructorMap
-		//= new Dictionary<DataFormatType, Func<IDataStoreFormat>>()
+		//private static readonly Dictionary<DataSpecType, Func<IDataStoreFormat>> FormatObjectConstructorMap
+		//= new Dictionary<DataSpecType, Func<IDataStoreFormat>>()
 		//{
-		//	{ DataFormatType.Dsv,     () => new SourceData.SourceFormat.Dsv() } ,
-		//	{ DataFormatType.Json,    () => new SourceData.SourceFormat.Json() } ,
+		//	{ DataSpecType.Dsv,     () => new SourceData.SourceFormat.Dsv() } ,
+		//	{ DataSpecType.Json,    () => new SourceData.SourceFormat.Json() } ,
 		//	//{ SourceType.Database,     () => new  } ,
 		//	//{ SourceType.Api,          () => new  } 
 		//};
 	}
+}
+
+
+public interface IDataSource
+{
+	public IDataStore Store { get; set; }
+	public IDataSpec Spec { get; set; }
+	
+	public IDataTree GetTree();
 }
 
 /// <summary>
@@ -1333,6 +1349,33 @@ public interface IDatabaseDataStore : IDataStore
 	public string Database { get; set; }
 }
 
+
+/// <summary>
+/// IDataSpec specifies info necessary for reading store data stream into a data tree
+/// </summary>
+public interface IDataSpec
+{
+	public DmsEnum.DataSpecType DataSpecType { get; }
+}
+public interface IDsvDataFormat : IDataSpec
+{
+	public bool HasHeaders { get; set; }
+	public char Delimitter { get; set; }
+	public char Escaper { get; set; }
+	public string LineBreak { get; set; }
+}
+public interface IJsonDataFormat : IDataSpec
+{
+	public int MaxDepth { get; set; }
+	public bool IncludeComments { get; set; }
+}
+
+public abstract partial class DataSpec : IDataSpec
+{
+	public abstract DataSpecType DataSpecType { get; }
+}
+
+// Base data store implementation adds error handling wrappers around interface methods and defines abstract implementation methods
 public abstract partial class DataStore : IDataStore
 {
 	// Static constructor
@@ -1573,7 +1616,6 @@ public abstract partial class DataStore : IDataStore
 	}
 }
 
-
 namespace DataStoreTests
 {
 
@@ -1669,10 +1711,14 @@ namespace DataStoreTests
 	public class FileTests : DataStoreTests
 	{
 		public override StoreType StoreType => StoreType.File;
-		
+
+		// Test file info
+		private string TmpDir { get; }
+		private string TestFileName { get; }
+		private string TestFileContent { get; }
+		private string GetTestFilePath() => Path.Join(TmpDir, TestFileName);		
 		public FileTests()
-		{
-			
+		{			
 			TmpDir = Path.Join(Directory.GetCurrentDirectory(), Guid.NewGuid().ToString());
 			TestFileName = "testfile.csv";
 			
@@ -1681,18 +1727,8 @@ namespace DataStoreTests
 			
 			WriteTestFile();
 		}
-		
-		private string TmpDir { get; }
-		private string TestFileName { get; }
-		private string TestFileContent { get; }
-		private string GetTestFilePath() => Path.Join(TmpDir, TestFileName);
-
-		public void Dispose()
-		{
-			DeleteFile();
-			GC.SuppressFinalize(this);
-		}
-		
+	
+		// Write test data file
 		public void WriteTestFile()
 		{			 
 			Directory.CreateDirectory(TmpDir);
@@ -1703,20 +1739,23 @@ namespace DataStoreTests
 			}
 		}
 		
+		// Clean up test data file on disposal		
+		public void Dispose()
+		{
+			DeleteFile();
+			GC.SuppressFinalize(this);
+		}		
 		private void DeleteFile()
 		{
 			if (File.Exists(GetTestFilePath())) { File.Delete(GetTestFilePath()); }
 			if (Directory.Exists(TmpDir)) { Directory.Delete(TmpDir); }
 		}
-
 		~FileTests()
 		{
 			DeleteFile();
 		}
 		
-
-		
-		
+		// Test method implementations
 		public override IFileDataStore GetNewConfigurableDataStore()
 		{
 			return (IFileDataStore) new DataStore.File()
@@ -1725,14 +1764,12 @@ namespace DataStoreTests
 				FileName = TestFileName
 			};
 		}
-
 		public override void ConstructorTest()
 		{
 			var s = GetNewConfigurableDataStore();
 			Debug.Equals(s.Directory, TmpDir);
 			Debug.Equals(s.FileName, TestFileName);
 		}
-
 		public override void DataStoreStaticConstructorTest()
 		{
 			var store = DataStore.New(StoreType);
@@ -1740,8 +1777,6 @@ namespace DataStoreTests
 			Debug.Assert(s.Directory is null);
 			Debug.Assert(s.FileName is null);
 		}
-
-
 		public override void ExistsTest()
 		{
 			var s1 = (DataStore.File)DataStore.New(StoreType);
@@ -1780,27 +1815,9 @@ namespace DataStoreTests
 		}
 
 	}
+
 }
 /*
-/// <summary>
-/// IDataFormat specifies info necessary for translating data from a data store into a data tree (instructions for reading source)
-/// </summary>
-public interface IDataFormat
-{
-	public DmsEnum.DataFormatType DataFormatType { get; }
-}
-public interface IDsvDataFormat: IDataFormat
-{
-	public bool HasHeaders { get; set; }
-	public char Delimitter { get; set; }
-	public char Escaper { get; set; }
-	public string LineBreak { get; set; }
-}
-public interface IJsonDataFormat : IDataFormat
-{
-	public int MaxDepth { get; set; }
-	public bool IncludeComments { get; set; }
-}
 
 
 /// <summary>
@@ -1819,14 +1836,14 @@ namespace SourceData
 	// Data format abstract implementation
 	public abstract partial class DataSourceFormat : IDataStoreFormat
 	{
-		public abstract SourceFormatType SourceFormatType { get; }
+		public abstract SourceDataSpecType SourceDataSpecType { get; }
 	}
-	// Data format concrete implementations (for all FormatType enum)
+	// Data format concrete implementations (for all DataSpecType enum)
 	public abstract partial class DataSourceFormat : IDataStoreFormat
 	{
 		public class Dsv : DataSourceFormat
 		{
-			public override DmsEnum.SourceFormatType SourceFormatType => DmsEnum.SourceFormatType.Dsv;
+			public override DmsEnum.SourceDataSpecType SourceDataSpecType => DmsEnum.SourceDataSpecType.Dsv;
 
 			// Configurable
 			public bool HasHeaders { get; set; }
@@ -1837,7 +1854,7 @@ namespace SourceData
 
 		public class Json : DataSourceFormat
 		{
-			public override DmsEnum.SourceFormatType SourceFormatType => DmsEnum.SourceFormatType.Json;
+			public override DmsEnum.SourceDataSpecType SourceDataSpecType => DmsEnum.SourceDataSpecType.Json;
 
 			// Configurable
 			public JsonDocumentOptions JsonDocumentOptions { get; set; }
@@ -1845,7 +1862,7 @@ namespace SourceData
 		
 		//public class Xml : DataFormat
 		//{
-		//	public override DmsEnum.FormatType FormatType => DmsEnum.FormatType.Xml;
+		//	public override DmsEnum.DataSpecType DataSpecType => DmsEnum.DataSpecType.Xml;
 		//}
 	}
 
@@ -1886,7 +1903,7 @@ namespace SourceData
 		public char Escaper { get; set; }
 		public string LineBreak { get; set; }
 
-		public override DmsEnum.FormatType DataFormat => DmsEnum.FormatType.Dsv;
+		public override DmsEnum.DataSpecType DataFormat => DmsEnum.DataSpecType.Dsv;
 
 		public override void ValidateFormat()
 		{
@@ -1995,7 +2012,7 @@ namespace SourceData
 	public class Json 
 	{
 
-		public override DmsEnum.FormatType DataFormat => DmsEnum.FormatType.Json;
+		public override DmsEnum.DataSpecType DataFormat => DmsEnum.DataSpecType.Json;
 		public JsonDocumentOptions JsonDocumentOptions { get; set; }
 
 		public override void ValidateFormat()
@@ -3780,7 +3797,7 @@ namespace DataSource
 /// </summary>
 public interface IDataFormat : IConfigurableObject
 {
-	public DmsEnum.FormatType FormatType { get; }
+	public DmsEnum.DataSpecType DataSpecType { get; }
 }
 
 /// <summary>
@@ -3815,7 +3832,7 @@ public interface IDataTreeBuilder
 /// </summary>
 public interface IDataFormat
 {
-	public DmsEnum.FormatType DataFormat { get; }
+	public DmsEnum.DataSpecType DataFormat { get; }
 	public ITreeGraph<Guid, object> GetTree(IDataStore source);
 	//public void ValidateFormat();
 }
@@ -3835,7 +3852,7 @@ namespace DataFormat
 		/// <summary>
 		/// Each enum value in DataFormat has a corresponding class which conforms to the IDataTreeBuilder interface
 		/// </summary>
-		public abstract DmsEnum.FormatType DataFormat { get; }
+		public abstract DmsEnum.DataSpecType DataFormat { get; }
 
 		/// <summary>
 		/// Reads a stream and returns a data tree
@@ -3874,7 +3891,7 @@ namespace DataFormat
 		public char Escaper { get; set; }
 		public string LineBreak { get; set; }
 
-		public override DmsEnum.FormatType DataFormat => DmsEnum.FormatType.Dsv;
+		public override DmsEnum.DataSpecType DataFormat => DmsEnum.DataSpecType.Dsv;
 
 		public override void ValidateFormat()
 		{
@@ -3982,7 +3999,7 @@ namespace DataFormat
 	public class Json : DataFormatBase
 	{
 
-		public override DmsEnum.FormatType DataFormat => DmsEnum.FormatType.Json;
+		public override DmsEnum.DataSpecType DataFormat => DmsEnum.DataSpecType.Json;
 		public JsonDocumentOptions JsonDocumentOptions { get; set; }
 
 		public override void ValidateFormat()
@@ -4111,7 +4128,7 @@ public interface IData
 	// these go private -- when you look at a tree, the roots you dont see
 	public IDataNodeBuilder DataBuilder { get; }
 
-	public DmsEnum.TreeFormatType TreeFormatType { get; }
+	public DmsEnum.TreeDataSpecType TreeDataSpecType { get; }
 	public ITreeGraph<Guid, object> DataTree { get; }
 	public IDataNode Root { get; }
 
