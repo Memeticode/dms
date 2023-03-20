@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace dms;
+
+/*
 public class Data : IData
 {
     private object? _value { get; }
@@ -99,3 +101,4 @@ public class Data : IData
     }
 }
 
+*/

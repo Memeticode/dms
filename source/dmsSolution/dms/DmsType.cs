@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace dms;
 
+/*
 public class DmsType : IDmsType
 {
     public StructureType StructureType { get; }
@@ -72,3 +73,4 @@ public class DmsType : IDmsType
 
 }
 
+*/
