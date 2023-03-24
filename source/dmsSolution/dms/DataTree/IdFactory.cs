@@ -6,20 +6,21 @@ public class IdFactory
 {
 
     protected internal uint _maxId = uint.MaxValue;
-    protected internal uint _lastId { get; set; }
+    protected internal uint _nextId { get; set; }
 
     public uint NewId()
     {
-        _lastId += 1;
-        return _lastId;
+        uint newId = _nextId;
+        _nextId++;
+        return newId;
     }
     public void Reset()
     {
-        _lastId = default(uint);
+        _nextId = default;
     }
     public IdFactory()
     {
-        _lastId = default(uint);
+        _nextId = default;
     }
 }
 

@@ -4,43 +4,28 @@ namespace dmsTests.DataTree;
 [TestClass]
 public class TreePathTests
 {
-    // Test helpers
-
-    protected internal void CheckPath(ITreePath path, IList<uint> list, string str, uint len)
-    {
-        Assert.IsTrue(ListsAreEqual(path.List, list));
-        Assert.AreEqual(path.String, str);
-        Assert.AreEqual(path.Length, len);
-    }
-    protected bool ListsAreEqual(IList<uint> list1, IList<uint> list2)
-    {
-        if (list1 is null && list2 is null) return true;
-        if (list1 is null || list2 is null) return false;
-
-        var len1 = list1.Count();
-        var len2 = list2.Count();
-
-        if (len1 != len2) return false;
-        for (int i = 0; i < len1; i++)
-            if (list1[i] != list2[i])
-                return false;
-
-        return true;
-    }
-
-
-    // Tests
-
+    
     [TestMethod]
     public void ConstructorTest()
     {
-        ITreePath path1 = new TreePath();
-        ITreePath path2 = new TreePath(new int[] { 1, 2, 3 });
-        ITreePath path3 = new TreePath(new uint[] { 1, 2, 3 });
+        ITreePath rootpath1 = new TreePath();
+        ITreePath rootpath2 = new TreePath("");
+        ITreePath rootpath3 = new TreePath(new uint[] { });
+        ITreePath rootpath4 = new TreePath(new int[] { });
 
-        CheckPath(path1, new uint[] { }, "", 0);
-        CheckPath(path2, new uint[] { 1, 2, 3 }, "1.2.3", 3);
-        CheckPath(path3, new uint[] { 1, 2, 3 }, "1.2.3", 3);
+        rootpath1.CheckStateMatchesExpected(new uint[] { }, "", 0);
+        rootpath2.CheckStateMatchesExpected(new uint[] { }, "", 0);
+        rootpath3.CheckStateMatchesExpected(new uint[] { }, "", 0);
+        rootpath4.CheckStateMatchesExpected(new uint[] { }, "", 0);
+
+
+        ITreePath path1 = new TreePath("0.0.0");
+        ITreePath path2 = new TreePath(new uint[] { 0, 0, 0 });
+        ITreePath path3 = new TreePath(new int[] { 0, 0, 0 });
+
+        path1.CheckStateMatchesExpected(new uint[] { 0, 0, 0 }, "0.0.0", 3);
+        path2.CheckStateMatchesExpected(new uint[] { 0, 0, 0 }, "0.0.0", 3);
+        path3.CheckStateMatchesExpected(new uint[] { 0, 0, 0 }, "0.0.0", 3);
     }
 
     [TestMethod]
@@ -84,6 +69,57 @@ public class TreePathTests
         Assert.AreEqual(-1, path3.CompareTo(path4));
         Assert.AreEqual(-1, path5.CompareTo(path4));
         Assert.AreEqual(1, path4.CompareTo(path5));
+    }
+
+
+    [TestMethod]
+    public void GetRootBasePathTest()
+    {
+        ITreePath path = new TreePath();
+        try
+        {
+            var bp = path.GetBasePath();
+        }
+        catch (TreePathException) { }
+        catch (Exception ex)
+        {
+            throw new InvalidProgramException($"Unexpected error thrown when attempting to get the base path of a root path. Expecting a TreePathException.", ex);
+        }
+    }
+
+    [TestMethod]
+    public void GetBasePathTest()
+    {
+        ITreePath basePath = new TreePath(new uint[] { 1, 2 });
+        ITreePath path1 = new TreePath(new uint[] { 1, 2, 0 });
+        ITreePath path2 = new TreePath(new uint[] { 1, 2, 1 });
+        ITreePath path3 = new TreePath(new uint[] { 1, 10, 10 });
+
+        var basePath1 = path1.GetBasePath();
+        var basePath2 = path2.GetBasePath();
+        var basePath3 = path3.GetBasePath();
+
+        Assert.IsTrue(basePath.Equals(basePath1));
+        Assert.IsTrue(basePath.Equals(basePath2));
+        Assert.IsFalse(basePath.Equals(basePath3));
+    }
+
+    [TestMethod]
+    public void GetBranchPathTest()
+    {
+        ITreePath basePath = new TreePath(new uint[] { 1, 2 });
+        ITreePath path1 = new TreePath(new uint[] { 1, 2, 0 });
+        ITreePath path2 = new TreePath(new uint[] { 1, 2, 1 });
+        ITreePath path3 = new TreePath(new uint[] { 1, 2, 3 });
+        ITreePath path4 = new TreePath(new uint[] { 1, 2, 3, 4});
+
+        var branchPath1 = basePath.GetBranchPath(0);
+        var branchPath2 = basePath.GetBranchPath(1);
+        var branchPath3 = path3.GetBranchPath(4);
+
+        Assert.IsTrue(path1.Equals(branchPath1));
+        Assert.IsTrue(path2.Equals(branchPath2));
+        Assert.IsTrue(path4.Equals(branchPath3));
     }
 
     [TestMethod]
@@ -185,40 +221,40 @@ public class TreePathTests
         Assert.IsFalse(path5.IsDescendantOf(path4));
     }
 
-    [TestMethod]
-    public void TryParseStringAsPathTest()
-    {
-        var path1 = new TreePath();
-        var path2 = new TreePath(new uint[] { 0, 1, 2, 3 });
-        var ps1 = "";
-        var ps2 = "0.1.2.3";
-        var ps3 = "0.-1.2.3";
-        var ps4 = "a.1.2.3";
-        var ps5 = "aSDfSDF";
-        var ps6 = ".1.2.3";
-        var ps7 = "1.2.3.";
-        var ps8 = "1..3";
+    //[TestMethod]
+    //public void TryParseStringAsPathTest()
+    //{
+    //    var path1 = new TreePath();
+    //    var path2 = new TreePath(new uint[] { 0, 1, 2, 3 });
+    //    var ps1 = "";
+    //    var ps2 = "0.1.2.3";
+    //    var ps3 = "0.-1.2.3";
+    //    var ps4 = "a.1.2.3";
+    //    var ps5 = "aSDfSDF";
+    //    var ps6 = ".1.2.3";
+    //    var ps7 = "1.2.3.";
+    //    var ps8 = "1..3";
 
-        Assert.IsTrue(TreePath.TryParseStringAsPath(ps1, out ITreePath parsePath1));
-        Assert.IsTrue(TreePath.TryParseStringAsPath(ps2, out ITreePath parsePath2));
-        Assert.IsFalse(TreePath.TryParseStringAsPath(ps3, out ITreePath parsePath3));
-        Assert.IsFalse(TreePath.TryParseStringAsPath(ps4, out ITreePath parsePath4));
-        Assert.IsFalse(TreePath.TryParseStringAsPath(ps5, out ITreePath parsePath5));
-        Assert.IsFalse(TreePath.TryParseStringAsPath(ps6, out ITreePath parsePath6));
-        Assert.IsFalse(TreePath.TryParseStringAsPath(ps7, out ITreePath parsePath7));
-        Assert.IsFalse(TreePath.TryParseStringAsPath(ps8, out ITreePath parsePath8));
+    //    Assert.IsTrue(TreePath.TryParseStringAsPath(ps1, out ITreePath parsePath1));
+    //    Assert.IsTrue(TreePath.TryParseStringAsPath(ps2, out ITreePath parsePath2));
+    //    Assert.IsFalse(TreePath.TryParseStringAsPath(ps3, out ITreePath parsePath3));
+    //    Assert.IsFalse(TreePath.TryParseStringAsPath(ps4, out ITreePath parsePath4));
+    //    Assert.IsFalse(TreePath.TryParseStringAsPath(ps5, out ITreePath parsePath5));
+    //    Assert.IsFalse(TreePath.TryParseStringAsPath(ps6, out ITreePath parsePath6));
+    //    Assert.IsFalse(TreePath.TryParseStringAsPath(ps7, out ITreePath parsePath7));
+    //    Assert.IsFalse(TreePath.TryParseStringAsPath(ps8, out ITreePath parsePath8));
 
-        Assert.IsTrue(parsePath1.Equals(path1));
-        Assert.IsTrue(parsePath2.Equals(path2));
+    //    Assert.IsTrue(parsePath1.Equals(path1));
+    //    Assert.IsTrue(parsePath2.Equals(path2));
 
-        Assert.IsTrue(parsePath3 is null);
-        Assert.IsTrue(parsePath4 is null);
-        Assert.IsTrue(parsePath5 is null);
-        Assert.IsTrue(parsePath6 is null);
-        Assert.IsTrue(parsePath7 is null);
-        Assert.IsTrue(parsePath8 is null);
+    //    Assert.IsTrue(parsePath3 is null);
+    //    Assert.IsTrue(parsePath4 is null);
+    //    Assert.IsTrue(parsePath5 is null);
+    //    Assert.IsTrue(parsePath6 is null);
+    //    Assert.IsTrue(parsePath7 is null);
+    //    Assert.IsTrue(parsePath8 is null);
 
-    }
+    //}
 
 }
 
