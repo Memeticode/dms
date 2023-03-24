@@ -343,3 +343,13 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+/dms interfaces.linq
+/dms interfaces with tree.linq
+/dms interfaces with data.linq
+/dms interfaces latest.linq
+/dms interfaces latest v6.linq
+/dms interfaces latest v5.linq
+/dms interfaces latest v4.linq
+/dms interfaces latest v3.linq
+/dms interfaces latest v2.linq
+/dms interfaces drafting ref.linq
