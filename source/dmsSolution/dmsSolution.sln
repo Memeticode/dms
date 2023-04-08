@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.32126.317
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dms", "dms\dms.csproj", "{E5BAAEBC-642E-4CF4-994D-121FE8E39F4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dmsTests", "dmsTests\dmsTests.csproj", "{6D1E5843-763A-4F05-A52B-AF71FC1B9AAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dmsTests", "dmsTests\dmsTests.csproj", "{6D1E5843-763A-4F05-A52B-AF71FC1B9AAE}"
 	ProjectSection(ProjectDependencies) = postProject
 		{E5BAAEBC-642E-4CF4-994D-121FE8E39F4A} = {E5BAAEBC-642E-4CF4-994D-121FE8E39F4A}
 	EndProjectSection

@@ -1,4 +1,4 @@
-﻿namespace dms.DataTree;
+﻿namespace dms.TreeGraph;
 
 
 public interface ITreePath: IEquatable<ITreePath>, IComparable<ITreePath>
@@ -14,9 +14,9 @@ public interface ITreePath: IEquatable<ITreePath>, IComparable<ITreePath>
     public ITreePath GetBranchPath(uint position);
     public ITreePath GetBranchPath(int position);
 
-    public bool IsBasePathOf(ITreePath other);
-	public bool IsAncestorOf(ITreePath other);
-	public bool IsDescendantOf(ITreePath other);
+    public bool IsBasePathOf(ITreePath? other);
+	public bool IsAncestorOf(ITreePath? other);
+	public bool IsDescendantOf(ITreePath? other);
 }
 
 public interface ITreeNode<T>

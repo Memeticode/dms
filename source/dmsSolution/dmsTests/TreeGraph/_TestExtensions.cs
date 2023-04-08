@@ -1,4 +1,4 @@
-﻿namespace dmsTests.DataTree;
+﻿namespace dmsTests.TreeGraph;
 
 
 public static class TestHelperExtensions
@@ -15,7 +15,7 @@ public static class TestHelperExtensions
 		Assert.AreEqual(height, tree.GetHeight(), "Tree Height");
 	}
 
-        public static void CheckStateMatchesExpected<T>(
+	public static void CheckStateMatchesExpected<T>(
 		this TreeNode<T> node
 		//, uint id
 		, TreeNodeType nodeType
@@ -77,20 +77,5 @@ public static class TestHelperExtensions
 		Assert.AreEqual(path.Length, len, "Path Length");
 	}
 
-	//public static bool ListsAreIdentical(IList<uint> list1, IList<uint> list2)
-	//{
-	//	if (list1 is null && list2 is null) return true;
-	//	if (list1 is null || list2 is null) return false;
-
-	//	var len1 = list1.Count();
-	//	var len2 = list2.Count();
-
-	//	if (len1 != len2) return false;
-	//	for (int i = 0; i < len1; i++)
-	//		if (list1[i] != list2[i])
-	//			return false;
-
-	//	return true;
-	//}
 }
 

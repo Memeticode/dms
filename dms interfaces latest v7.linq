@@ -11,8 +11,10 @@
 void Main()
 {
 	var tt = new DataTree();
-	tt.Dump();
-	tt.NodeMap.Dump();
+	//tt.Dump();
+	//tt.NodeMap.Dump();
+	
+	
 	// Tree Graph Tests	
 //	var tt = new TreeTests.TreeGraphTests<object>();
 //	tt.RunAllTests();
@@ -29,39 +31,39 @@ void Main()
 //	dsft.RunAllTests();
 //
 //
-//
-//	IDataSource source1 = new DataSource()
-//	{
-//		Store = new DataStore.RawInput()
-//		{
-//			Input = $"A,B,C{Environment.NewLine}1,2,3{Environment.NewLine}\"1a\",22.22,3",
-//			Encoding = Encoding.UTF8
-//		},
-//		Spec = new DataSpec.Dsv()
-//		{
-//			HasHeaders = true,
-//			Delimitter = ',',
-//			Escaper = '"',
-//			LineBreak = Environment.NewLine
-//		}
-//	};
-//	source1.Tree.Display("Source 1 Tree (raw input, dsv)").Dump();
-//
-//
-//	IDataSource source2 = new DataSource()
-//	{
-//		Store = new DataStore.File()
-//		{
-//			Directory = @"C:\Users\Work\Projects\dms\SampleData\JSON",
-//			FileName = "sampleRecords.json"
-//		},
-//		Spec = new DataSpec.Json()
-//		{
-//			IncludeComments = false,
-//			MaxDepth = 64
-//		}
-//	};
-//	source2.Tree.Display("Source 2 Tree (file, json)").Dump();
+
+	IDataSource source1 = new DataSource()
+	{
+		Store = new DataStore.RawInput()
+		{
+			Input = $"A,B,C{Environment.NewLine}1,2,3{Environment.NewLine}\"1a\",22.22,3",
+			Encoding = Encoding.UTF8
+		},
+		Spec = new DataSpec.Dsv()
+		{
+			HasHeaders = true,
+			Delimitter = ',',
+			Escaper = '"',
+			LineBreak = Environment.NewLine
+		}
+	};
+	source1.Tree.Display("Source 1 Tree (raw input, dsv)").Dump();
+
+
+	IDataSource source2 = new DataSource()
+	{
+		Store = new DataStore.File()
+		{
+			Directory = @"C:\Users\Work\Projects\dms\SampleData\JSON",
+			FileName = "sampleRecords.json"
+		},
+		Spec = new DataSpec.Json()
+		{
+			IncludeComments = false,
+			MaxDepth = 64
+		}
+	};
+	source2.Tree.Display("Source 2 Tree (file, json)").Dump();
 
 	/*
 	Add:

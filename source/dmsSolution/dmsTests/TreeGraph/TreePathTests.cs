@@ -1,5 +1,5 @@
 ﻿
-namespace dmsTests.DataTree;
+namespace dmsTests.TreeGraph;
 
 [TestClass]
 public class TreePathTests
@@ -10,13 +10,13 @@ public class TreePathTests
     {
         ITreePath rootpath1 = new TreePath();
         ITreePath rootpath2 = new TreePath("");
-        ITreePath rootpath3 = new TreePath(new uint[] { });
-        ITreePath rootpath4 = new TreePath(new int[] { });
+        ITreePath rootpath3 = new TreePath(Array.Empty<uint>());
+        ITreePath rootpath4 = new TreePath(Array.Empty<int>());
 
-        rootpath1.CheckStateMatchesExpected(new uint[] { }, "", 0);
-        rootpath2.CheckStateMatchesExpected(new uint[] { }, "", 0);
-        rootpath3.CheckStateMatchesExpected(new uint[] { }, "", 0);
-        rootpath4.CheckStateMatchesExpected(new uint[] { }, "", 0);
+        rootpath1.CheckStateMatchesExpected(Array.Empty<uint>(), "", 0);
+        rootpath2.CheckStateMatchesExpected(Array.Empty<uint>(), "", 0);
+        rootpath3.CheckStateMatchesExpected(Array.Empty<uint>(), "", 0);
+        rootpath4.CheckStateMatchesExpected(Array.Empty<uint>(), "", 0);
 
 
         ITreePath path1 = new TreePath("0.0.0");

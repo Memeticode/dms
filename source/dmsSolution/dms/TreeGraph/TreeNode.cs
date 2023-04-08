@@ -1,4 +1,4 @@
-﻿namespace dms.DataTree;
+﻿namespace dms.TreeGraph;
 
 public class TreeNodeException : Exception
 {

@@ -1,10 +1,4 @@
-﻿using System.Collections;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-
-namespace dms.DataTree;
+﻿namespace dms.TreeGraph;
 
 
 public class TreePathException : Exception
@@ -24,6 +18,7 @@ public class TreePath : ITreePath
     // ITreePath implementation
     public IReadOnlyCollection<uint> List => new ReadOnlyCollection<uint>(_list);
     public string String => Length == 0 ? "" : string.Join(_seperator, _list);
+    public override string ToString() => String;
     public uint Length { get; }
 
     public uint this[uint pathIdx] => _list[(int)pathIdx];
@@ -46,7 +41,7 @@ public class TreePath : ITreePath
 
         if (other == null) return 1;
 
-        uint len = Math.Min(Length, other.Length);
+        //uint len = Math.Min(Length, other.Length);
         for (int i = 0; i < Length; i++)
         {
             if (this[i] == other[i]) continue;
@@ -72,13 +67,13 @@ public class TreePath : ITreePath
     public ITreePath GetBranchPath(uint position) => new TreePath(List.Append(position));
     public ITreePath GetBranchPath(int position) => new TreePath(List.Append((uint)position));
 
-    public bool IsBasePathOf(ITreePath other)
+    public bool IsBasePathOf(ITreePath? other)
     {
         if (other == null) return false;
         if (Length + 1 != other.Length) return false;
         return Equals(other.GetBasePath());
     }
-    public bool IsAncestorOf(ITreePath other)
+    public bool IsAncestorOf(ITreePath? other)
     {
         if (other == null) return false;
         if (Length < other.Length)
@@ -90,7 +85,7 @@ public class TreePath : ITreePath
         }
         return false;
     }
-    public bool IsDescendantOf(ITreePath other)
+    public bool IsDescendantOf(ITreePath? other)
     {
         if (other == null) return false;
         if (Length > other.Length)
@@ -135,11 +130,11 @@ public class TreePath : ITreePath
     public TreePath(string pathString)
     {
         _list = ParseStringAsPathList(pathString);
-        Length = (uint)_list.Count();
+        Length = (uint)_list.Count;
     }
 
 
-    protected internal List<uint> ParseStringAsPathList(string pathString)
+    protected internal static List<uint> ParseStringAsPathList(string pathString)
     {
         if (string.IsNullOrEmpty(pathString))
             return new List<uint>();
